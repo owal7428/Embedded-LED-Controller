@@ -1,0 +1,5 @@
+../Src/LED_Driver.c:13:6:LED_Init	3
+../Src/LED_Driver.c:37:6:LED_EnableClock	3
+../Src/LED_Driver.c:47:6:LED_Enable	3
+../Src/LED_Driver.c:57:6:LED_Disable	3
+../Src/LED_Driver.c:67:6:LED_Toggle	3
