@@ -9,17 +9,19 @@
 
 uint8_t currentLED;
 
+static int redStatus;
+static int greenStatus;
+
 // I'm using the green LED here
 void ApplicationInit() {
     InitGreenLED();
     InitRedLED();
 
-    currentLED = GREEN_LED;
-
     DisableGreenLED();
     DisableRedLED();
 
-    addSchedulerEvent(DELAY_EVENT);
+    redStatus = LED_OFF;
+    greenStatus = LED_OFF;
 
     #if BUTTON_INTERRUPT_ENABLE == 0
     InitButton();
@@ -27,6 +29,15 @@ void ApplicationInit() {
     #else
     InitButtonInterruptMode();
     #endif
+    
+    LED_Timer2_Init();
+    LED_Timer5_Init();
+
+    LED_Timer2_Start();
+    LED_Timer5_Start();
+
+    addSchedulerEvent(DELAY_EVENT);
+
 }
 
 void InitGreenLED() {
@@ -104,14 +115,94 @@ void Delay(uint32_t delay) {
 }
 
 void EXTI0_IRQHandler(void) {
-    InterruptIRQ_disable(EXTI0_IRQ_NUMBER);
+    InterruptIRQ_Disable(EXTI0_IRQ_NUMBER);
 
-    if (currentLED == GREEN_LED)
-        ToggleGreenLED();
-    else if (currentLED == RED_LED)
+    // Re-enable TIM2's interrupt
+    *NVIC_SET_ENABLE |= (0x1 << TIM2_IRQ_NUMBER);
+
+    #if USE_LIMITED_RESOURCES == 1
+    DisableGreenLED();
+    DisableRedLED();
+    redStatus = LED_OFF;
+    greenStatus = LED_OFF;
+    #else
+    // Reset LEDs
+    LED_Timer2_Reset();
+    LED_Timer5_Reset();
+    #endif
+
+    EXTI_Clear_Pending(BUTTON_PIN_NUM);
+
+    InterruptIRQ_Enable(EXTI0_IRQ_NUMBER);
+}
+
+void TIM2_IRQHandler(void) {
+    InterruptIRQ_Disable(TIM2_IRQ_NUMBER);
+
+    // Re-enable EXTI0's interrupt
+    *NVIC_SET_ENABLE |= (0x1 << EXTI0_IRQ_NUMBER);
+
+    uint32_t flags = TIM2 -> SR;
+    bool countedFlag = flags & (0x1 << 1);
+
+    // If bit 1 of SR register is set
+    if (countedFlag)
+    {
+
+        #if USE_LIMITED_RESOURCES == 1
+        if (greenStatus == LED_OFF) {
+            LED_Timer2_Priority();
+			ToggleRedLED();
+			redStatus += 1; redStatus %= 2;
+        }
+        else {
+        	DisableRedLED();
+        	redStatus = LED_OFF;
+            LED_Timer2_Priority_Reset();
+        }
+        #else
         ToggleRedLED();
-    
-    EXTI_clear_pending(BUTTON_PIN_NUM);
+        redStatus += 1; redStatus %= 2;
+        #endif
+    }
 
-    InterruptIRQ_enable(EXTI0_IRQ_NUMBER);
+    TIM2 -> SR &= ~(0x1 << 1);
+
+    InterruptIRQ_Clear_Pending(TIM2_IRQ_NUMBER);
+
+    InterruptIRQ_Enable(TIM2_IRQ_NUMBER);
+}
+
+void TIM5_IRQHandler(void) {
+    InterruptIRQ_Disable(TIM5_IRQ_NUMBER);
+
+    uint32_t flags = TIM5 -> SR;
+    bool countedFlag = flags & (0x1 << 1);
+
+    // If bit 1 of SR register is set
+    if (countedFlag)
+    {
+
+        #if USE_LIMITED_RESOURCES == 1
+        if (redStatus == LED_OFF) {
+            LED_Timer5_Priority();
+			ToggleGreenLED();
+			greenStatus += 1; greenStatus %= 2;
+        }
+        else {
+        	DisableGreenLED();
+        	greenStatus = LED_OFF;
+            LED_Timer5_Priority_Reset();
+        }
+        #else
+        ToggleGreenLED();
+        greenStatus += 1; greenStatus %= 2;
+        #endif
+    }
+
+    TIM5 -> SR &= ~(0x1 << 1);
+
+    InterruptIRQ_Clear_Pending(TIM5_IRQ_NUMBER);
+
+    InterruptIRQ_Enable(TIM5_IRQ_NUMBER);
 }

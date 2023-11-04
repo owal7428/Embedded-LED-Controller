@@ -1,0 +1,9 @@
+../Src/Timer_Driver.c:10:6:Timer_Init	3
+../Src/Timer_Driver.c:57:6:Timer_Init_Channel_1	1
+../Src/Timer_Driver.c:87:6:Timer_Toggle_Clock	5
+../Src/Timer_Driver.c:102:6:Timer_Start	1
+../Src/Timer_Driver.c:106:6:Timer_Stop	1
+../Src/Timer_Driver.c:110:6:Timer_Reset	1
+../Src/Timer_Driver.c:114:10:Timer_Return_Value	1
+../Src/Timer_Driver.c:118:6:Timer_Toggle_Interrupt	5
+../Src/Timer_Driver.c:133:6:Timer_Change_Priority	3

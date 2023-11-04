@@ -15,7 +15,11 @@
 #define NAME_LENGTH 11
 #define MAGNIFY 250000
 
+#define LED_ON 1
+#define LED_OFF 0
+
 #define BUTTON_INTERRUPT_ENABLE 1
+#define USE_LIMITED_RESOURCES 0
 
 void ApplicationInit();
 

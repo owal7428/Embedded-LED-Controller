@@ -24,10 +24,14 @@
 
 // Bus memory addresses
 
+#define APB1_BASE_ADDR		(PERIPHERAL_BASE_ADDR + 0x00000)
 #define APB2_BASE_ADDR 		(PERIPHERAL_BASE_ADDR + 0X13800)
 #define AHB1_BASE_ADDR 		(PERIPHERAL_BASE_ADDR + 0x20000)
 
 // Port memory addresses
+
+#define TIM2_BASE_ADDR		(APB1_BASE_ADDR + 0x0)
+#define TIM5_BASE_ADDR		(APB1_BASE_ADDR + 0xC00)
 
 #define SYSCFG_BASE_ADDR	(APB2_BASE_ADDR + 0x0)
 #define EXTI_BASE_ADDR 		(APB2_BASE_ADDR + 0x400)
@@ -47,6 +51,36 @@
 #define NVIC_CLEAR_ENABLE 	NVIC_ICER0
 #define NVIC_SET_PENDING	NVIC_ISPR0
 #define NVIC_CLEAR_PENDING	NVIC_ICPR0
+
+#define NVIC_IPR0 ((volatile uint32_t*) 0xE000E400)
+
+#define NVIC_PRIORITY 		NVIC_IPR0
+
+typedef struct
+{
+	volatile uint32_t CR1;
+	volatile uint32_t CR2;
+	volatile uint32_t SMCR;
+	volatile uint32_t DIER;
+	volatile uint32_t SR;
+	volatile uint32_t EGR;
+	volatile uint32_t CCMR1;
+	volatile uint32_t CCMR2;
+	volatile uint32_t CCER;
+	volatile uint32_t CNT;
+	volatile uint32_t PSC;
+	volatile uint32_t ARR;
+	volatile uint32_t Reserved1;
+	volatile uint32_t CCR1;
+	volatile uint32_t CCR2;
+	volatile uint32_t CCR3;
+	volatile uint32_t CCR4;
+	volatile uint32_t Reserved2;
+	volatile uint32_t DCR;
+	volatile uint32_t DMAR;
+	volatile uint32_t OR;
+
+} GPTIMR_RegDef_t;
 
 typedef struct
 {
@@ -120,6 +154,9 @@ typedef struct
 
 // Casting memory allocated for registers to struct of same size
 
+#define TIM2 ((GPTIMR_RegDef_t*) TIM2_BASE_ADDR)
+#define TIM5 ((GPTIMR_RegDef_t*) TIM5_BASE_ADDR)
+
 #define SYSCFG ((SYSCFG_RegDef_t*) SYSCFG_BASE_ADDR)
 #define EXTI ((EXTI_RegDef_t*) EXTI_BASE_ADDR)
 
@@ -127,9 +164,18 @@ typedef struct
 #define GPIOG ((GPIO_RegDef_t*) GPIOG_BASE_ADDR)
 #define RCC ((RCC_RegDef_t*) RCC_BASE_ADDR)
 
+// Offset values defined in RCC register map
+
+#define TIM2_OFFSET 0
+#define TIM5_OFFSET 3
 
 #define GPIOA_OFFSET 0
 #define GPIOG_OFFSET 6
+
+// Clock enable macros
+
+#define TIMx_CLOCK_ENABLE(x) (RCC -> APB1ENR |= (1 << x))
+#define TIMx_CLOCK_DISABLE(x) (RCC -> APB1ENR &= ~(1 << x))
 
 #define SYSCFG_CLOCK_ENABLE (RCC -> APB2ENR |= (1 << 14))
 #define SYSCFG_CLOCK_DISABLE (RCC -> APB2ENR &= ~(1 << 14))

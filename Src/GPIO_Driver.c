@@ -113,9 +113,9 @@ uint16_t GPIO_ReturnPortCode(GPIO_RegDef_t* reg) {
 
 void GPIO_EnableOrDisableInterrupt(uint8_t IRQ, uint8_t enableOrDisable) {
 	if (enableOrDisable == ENABLE) {
-		InterruptIRQ_enable(IRQ);
+		InterruptIRQ_Enable(IRQ);
 	}
 	else if (enableOrDisable == DISABLE) {
-		InterruptIRQ_disable(IRQ);
+		InterruptIRQ_Disable(IRQ);
 	}
 }

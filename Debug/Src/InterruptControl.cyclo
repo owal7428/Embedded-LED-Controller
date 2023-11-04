@@ -1,5 +1,6 @@
-../Src/InterruptControl.c:3:6:InterruptIRQ_enable	1
-../Src/InterruptControl.c:9:6:InterruptIRQ_disable	1
-../Src/InterruptControl.c:15:6:InterruptIRQ_clear_pending	1
-../Src/InterruptControl.c:21:6:InterruptIRQ_set_pending	1
-../Src/InterruptControl.c:27:6:EXTI_clear_pending	1
+../Src/InterruptControl.c:10:6:InterruptIRQ_Enable	1
+../Src/InterruptControl.c:22:6:InterruptIRQ_Disable	1
+../Src/InterruptControl.c:34:6:InterruptIRQ_Clear_Pending	1
+../Src/InterruptControl.c:46:6:InterruptIRQ_Set_Pending	1
+../Src/InterruptControl.c:58:6:InterruptIRQ_Configure_Priority	1
+../Src/InterruptControl.c:68:6:EXTI_Clear_Pending	1
